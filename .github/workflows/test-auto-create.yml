@@ -1,16 +1,22 @@
 name: Test Auto Directory Creation
 
 on:
-  workflow_dispatch:  # 允许你手动在 GitHub 上点击运行
+  workflow_dispatch:
   push:
     branches: [ "main" ]
 
 jobs:
   test-create:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 👈 关键！授予写权限
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,4 +32,4 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add .
           git diff --staged --quiet || git commit -m "✅ Test: Auto-created directories"
-          git push origin main
+          git push
